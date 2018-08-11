@@ -1,3 +1,4 @@
+from hyperopt import hp, fmin, rand, tpe, space_eval
 import sys, os, time, re, MySQLdb
 
 def copyFile(source, target):
