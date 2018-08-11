@@ -6,11 +6,11 @@ def copyFile(source, target):
 def appendConfig(target, configs):
     open(target, "a").write(configs)
 
-confDefault=""
-conf=""
-logPath = ""
-run=""
-resultPath=""
+confDefault="/root/SMAC/workspace/myDefault.cnf"
+conf="/etc/my.cnf"
+logPath = "/root/SMAC/workspace/result/MysqlResult.csv"
+run = "/usr/local/tpcc/action.sh"
+resultPath = "/usr/local/tpcc/tpcc_mysql_02.log"
 
 db = MySQLdb.connect("localhost", "root", "123456", charset='utf8' )
 cursor = db.cursor()
@@ -34,24 +34,32 @@ paramNames=[
     "max_connect_errors",
     "max_connections",
     "tmp_table_size",
-    "max_heap_table_size"
+    "max_heap_table_size",
+    "innodb_autoextend_increment",
+    "innodb_buffer_pool_size",
+    "innodb_additional_mem_pool_size",
+    "innodb_log_buffer_size"
 ]
 
 space = [
     hp.uniform(paramNames[0], 128, 1024*4),
     hp.uniform(paramNames[1], 128, 1024*2),
-    hp.uniform(paramNames[2], 128, 2048),
-    hp.uniform(paramNames[3], 8, 128),
-    hp.uniform(paramNames[4], 1024, 3*1024),
-    hp.uniform(paramNames[5], 2*1024, 16*1024),
+    hp.uniform(paramNames[2], 128, 2049),
+    hp.uniform(paramNames[3], 8, 129),
+    hp.uniform(paramNames[4], 1, 4),
+    hp.uniform(paramNames[5], 2, 17),
     hp.uniform(paramNames[6], 0, 2000),
     hp.uniform(paramNames[7], 2000, 50000),
-    hp.uniform(paramNames[8], 8*1024, 128*1024),
-    hp.uniform(paramNames[9], 2*1024, 128*1024)
+    hp.uniform(paramNames[8], 8, 129),
+    hp.uniform(paramNames[9], 2, 129),
+    hp.uniform(paramNames[10], 8, 513),
+    hp.uniform(paramNames[11], 0, 9),
+    hp.uniform(paramNames[12], 1, 21),
+    hp.uniform(paramNames[13], 4, 33)
 ]
 
 if(os.path.exists(logPath) == False):
-    open(logPath, "w").write(",".join(paramNames) + "," + "throughput")
+    open(logPath, "w").write(",".join(paramNames) + "," + "TpmC")
 open(logPath, "a").write("\n")
 
 def changeConfig(configs):
@@ -62,16 +70,20 @@ def changeConfig(configs):
     copyFile(confDefault,conf)
 
     configString = ""
-    configString += ("\n"+paramNames[0]+"="+configList[0].split(","[0]))
-    configString += ("\n"+paramNames[1]+"="+configList[1].split(","[0]))
+    configString += ("\n"+paramNames[0]+"="+configList[0].split(","[0])+"KB")
+    configString += ("\n"+paramNames[1]+"="+configList[1].split(","[0])+"KB")
     configString += ("\n"+paramNames[2]+"="+configList[2].split(","[0]))
     configString += ("\n"+paramNames[3]+"="+configList[3].split(","[0]))
-    configString += ("\n"+paramNames[4]+"="+configList[4].split(","[0]))
-    configString += ("\n"+paramNames[5]+"="+configList[5].split(","[0]))
+    configString += ("\n"+paramNames[4]+"="+configList[4].split(","[0])+"MB")
+    configString += ("\n"+paramNames[5]+"="+configList[5].split(","[0])+"MB")
     configString += ("\n"+paramNames[6]+"="+configList[6].split(","[0]))
     configString += ("\n"+paramNames[7]+"="+configList[7].split(","[0]))
-    configString += ("\n"+paramNames[8]+"="+configList[8].split(","[0]))
-    configString += ("\n"+paramNames[9]+"="+configList[9].split(","[0]))
+    configString += ("\n"+paramNames[8]+"="+configList[8].split(","[0])+"MB")
+    configString += ("\n"+paramNames[9]+"="+configList[9].split(","[0])+"MB")
+    configString += ("\n"+paramNames[10]+"="+configList[10].split(","[0])+"MB")
+    configString += ("\n"+paramNames[11]+"="+configList[11].split(","[0])+"MB")
+    configString += ("\n"+paramNames[12]+"="+configList[12].split(","[0])+"MB")
+    configString += ("\n"+paramNames[13]+"="+configList[13].split(","[0])+"MB")
 
 
     open(logPath, "a").write("\n")
@@ -94,12 +106,12 @@ def q(args):
     f = open(resultPath, 'r')
 
     try:
-        Throughput = 
+        TpmC = Throughput = float(f.readlines()[-1].split("                 ")[1].split(' ')[0])
     except:
-        Throughput = 0
-    open(logPath, "a").write(','+str(Throughput))
+        TpmC = 0
+    open(logPath, "a").write(','+str(TpmC))
 
-    return -Throughput
+    return -TpmC
 
 best = fmin(q, space, algo = rand.suggest, max_evals = 10)
 print(best)

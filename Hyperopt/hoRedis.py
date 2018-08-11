@@ -30,13 +30,13 @@ paramNames = [
 
 if(os.path.exists(logPath) == False):
     open(logPath, "w").write(",".join(paramNames) + "," + "requestPerSecond")
-open(logPath, "a").write("\n")
+# open(logPath, "a").write("\n")
 
 space = [
     hp.uniform(paramNames[0], 1, 11),
     hp.uniform(paramNames[1], 32, 129),
     hp.uniform(paramNames[2], 256, 1025),
-    hp.uniform(paramNames[3], -5, 0),
+    hp.uniform(paramNames[3], -6, -1),
     hp.uniform(paramNames[4], 100, 301),
     hp.uniform(paramNames[5], 5, 21),
     hp.uniform(paramNames[6], 1, 15001),
@@ -59,7 +59,9 @@ def changeConfig(configs):
     configString += (configList[7]+" ")
     configString += (configList[8]+" \n")
 
-    writeConfig(workload,configString)
+    writeConfig(configString,workload)
+    open(logPath, "a").write("\n")
+    open(logPath, "a").writable(",".join(configList))
     
 def q(args):
     changeConfig(args)
@@ -75,7 +77,7 @@ def q(args):
         f = 0
         g = "CRASHED"
 
-    status = "SUCCESS"
+        status = "SUCCESS"
     if g != "requests":
         status = "CRASHED"
 
