@@ -1,5 +1,5 @@
 from hyperopt import hp, fmin, rand, tpe, space_eval
-import sys, os, time, re, MySQLdb
+import sys, os, time, re, pymysql
 
 def copyFile(source, target):
     open(target, "w").write(open(source, "r").read())
@@ -8,21 +8,21 @@ def appendConfig(target, configs):
 
 confDefault="/root/SMAC/workspace/myDefault.cnf"
 conf="/etc/my.cnf"
-logPath = "/root/SMAC/workspace/result/MysqlResult.csv"
+logPath = "/root/Hyperopt/hoMysql.csv"
 run = "/usr/local/tpcc/action.sh"
 resultPath = "/usr/local/tpcc/tpcc_mysql_02.log"
 
-db = MySQLdb.connect("localhost", "root", "123456", charset='utf8' )
+db = pymysql.connect("localhost", "root", "123456", charset='utf8' )
 cursor = db.cursor()
 dropDB = "DROP DATABASE IF EXISTS tpcc100;"
 createDB = "CREATE DATABASE tpcc100;"
-# try:
-#    cursor.execute(dropDB)
-#    cursor.execute(createDB)
-#    db.commit()
-# except:
-#    db.rollback()
-# db.close()
+try:
+   cursor.execute(dropDB)
+   cursor.execute(createDB)
+   db.commit()
+except:
+   db.rollback()
+db.close()
 
 paramNames=[
     "sort_buffer_size",
@@ -65,25 +65,27 @@ open(logPath, "a").write("\n")
 def changeConfig(configs):
     configList = []
     for config in configs:
-        configList.append(str(conf))
+        configList.append(str(config))
 
     copyFile(confDefault,conf)
 
     configString = ""
-    configString += ("\n"+paramNames[0]+"="+configList[0].split(","[0])+"KB")
-    configString += ("\n"+paramNames[1]+"="+configList[1].split(","[0])+"KB")
-    configString += ("\n"+paramNames[2]+"="+configList[2].split(","[0]))
-    configString += ("\n"+paramNames[3]+"="+configList[3].split(","[0]))
-    configString += ("\n"+paramNames[4]+"="+configList[4].split(","[0])+"MB")
-    configString += ("\n"+paramNames[5]+"="+configList[5].split(","[0])+"MB")
-    configString += ("\n"+paramNames[6]+"="+configList[6].split(","[0]))
-    configString += ("\n"+paramNames[7]+"="+configList[7].split(","[0]))
-    configString += ("\n"+paramNames[8]+"="+configList[8].split(","[0])+"MB")
-    configString += ("\n"+paramNames[9]+"="+configList[9].split(","[0])+"MB")
-    configString += ("\n"+paramNames[10]+"="+configList[10].split(","[0])+"MB")
-    configString += ("\n"+paramNames[11]+"="+configList[11].split(","[0])+"MB")
-    configString += ("\n"+paramNames[12]+"="+configList[12].split(","[0])+"MB")
-    configString += ("\n"+paramNames[13]+"="+configList[13].split(","[0])+"MB")
+    configString += ("\n"+paramNames[0]+"="+str(round(float(configList[0])))+"KB")
+    configString += ("\n"+paramNames[1]+"="+str(round(float(configList[1])))+"KB")
+    configString += ("\n"+paramNames[2]+"="+str(round(float(configList[2]))))
+    configString += ("\n"+paramNames[3]+"="+str(round(float(configList[3]))))
+    configString += ("\n"+paramNames[4]+"="+str(round(float(configList[4])))+"MB")
+    configString += ("\n"+paramNames[5]+"="+str(round(float(configList[5])))+"MB")
+    configString += ("\n"+paramNames[6]+"="+str(round(float(configList[6]))))
+    configString += ("\n"+paramNames[7]+"="+str(round(float(configList[7]))))
+    configString += ("\n"+paramNames[8]+"="+str(round(float(configList[8])))+"MB")
+    configString += ("\n"+paramNames[9]+"="+str(round(float(configList[9])))+"MB")
+    configString += ("\n"+paramNames[10]+"="+str(round(float(configList[10])))+"MB")
+    configString += ("\n"+paramNames[11]+"="+str(round(float(configList[11])))+"MB")
+    configString += ("\n"+paramNames[12]+"="+str(round(float(configList[12])))+"MB")
+    configString += ("\n"+paramNames[13]+"="+str(round(float(configList[13])))+"MB")
+
+    appendConfig(conf,configString)
 
 
     open(logPath, "a").write("\n")
@@ -94,13 +96,13 @@ def changeConfig(configs):
 def q(args):
     changeConfig(args)
 
-    try:
-        cursor.execute(dropDB)
-        cursor.execute(createDB)
-        db.commit()
-    except:
-        db.rollback()
-        db.close()
+    # try:
+    #     cursor.execute(dropDB)
+    #     cursor.execute(createDB)
+    #     db.commit()
+    # except:
+    #     db.rollback()
+    #     db.close()
 
     os.system(run)
     f = open(resultPath, 'r')

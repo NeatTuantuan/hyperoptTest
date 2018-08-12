@@ -1,0 +1,15 @@
+#  
+#Tue Aug 07 16:39:40 CST 2018
+[mysqld_safe]
+pid-file=/var/run/mysqld/mysqld.pid
+log-error=/var/log/mysqld.log
+[mysqld]
+password=123456
+symbolic-links=0
+skip-grant-tables=
+default-character-set=utf8
+port=3306
+socket=/var/lib/mysql/mysql.sock
+datadir=/usr/local/mysql
+log-error=/var/log/mysqld.log
+user=root
