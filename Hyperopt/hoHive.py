@@ -1,5 +1,5 @@
 from hyperopt import hp, fmin, rand, tpe, space_eval
-import sys, os, time
+import sys, os, time, csv
 
 confPath = "/home/master/app/HiBench-master/bin/workloads/sql/join/hadoop/hoTime.csv"
 logPath = "/home/master/app/HiBench-master/bin/workloads/sql/join/hadoop/hoResult.csv"
@@ -86,7 +86,7 @@ def q(args):
         time = float(getTime(resultPath))
     except:
         time = 100000
-        
+
     open(logPath, "a").write(str(time))
 
     return time
