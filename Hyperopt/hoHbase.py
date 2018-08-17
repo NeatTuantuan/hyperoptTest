@@ -87,12 +87,12 @@ def q(args):
     os.system(run)
     f = open(resultPath, 'r')
     try:
-        RunTime = Throughput = float(f.readlines()[0].split(", ")[2][:-1])
+        RunTime = Throughput = float(f.readlines()[1].split(", ")[2][:-1])
     except:
         RunTime = 0
     open(logPath, "a").write(","+str(RunTime))
 
     return RunTime
 
-best = fmin(q, space, algo=rand.suggest, max_evals=100)
+best = fmin(q, space, algo=rand.suggest, max_evals=10)
 print(best)
