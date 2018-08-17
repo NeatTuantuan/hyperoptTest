@@ -1,7 +1,8 @@
+#coding:utf-8
 from hyperopt import hp, fmin, rand, tpe, space_eval
 import sys, os, time, csv
 
-confPath = "/home/master/app/HiBench-master/bin/workloads/sql/join/hadoop/hoTime.csv"
+confPath = "/home/master/app/HiBench-master/bin/workloads/sql/join/hadoop/singleRun.csv"
 logPath = "/home/master/app/HiBench-master/bin/workloads/sql/join/hadoop/hoResult.csv"
 run = "/home/master/app/SMAC/workspace/run.sh"
 resultPath = "/home/master/app/HiBench-master/bin/workloads/sql/join/hadoop/time.csv"
@@ -42,15 +43,19 @@ space = [
     hp.choice(paramNames[9], ['true', 'false']),
 ]
 
+
+# truncateCSV(confPath)
+
+
 #将参数名写入日志中
 if(os.path.exists(logPath) == False):
     open(logPath, "w").write(",".join(paramNames) + "," + "time")
 open(logPath, "a").write("\n")
 
 #将参数名写入配置文件的csv中
-truncateCSV(confPath)
 
-open(confPath, "w").write(",".join(paramNames))
+# if(os.path.exists(confPath) == False):
+#     open(confPath, "w").write(",".join(paramNames) )
 # open(confPath, "a").write("\n")
 
 #将参数写入配置文件csv中
@@ -58,6 +63,10 @@ def changeConfig(configs):
     configList = []
     for config in configs:
         configList.append(str(config))
+
+
+    truncateCSV(confPath)
+    open(confPath, "w").write(",".join(paramNames) )
 
     configSting = ""
     configSting += (str(round(float(configList[0])))+",")
@@ -72,8 +81,9 @@ def changeConfig(configs):
     configSting += (configList[9])
 
     #配置文件中的参数字符串每次循环覆盖
-    open(confPath, "w").write(configSting)
-    #日志中参数不用覆盖
+    open(confPath, "a").write("\n")
+    open(confPath, "a").write(configSting)
+
     open(logPath, "a").write("\n")
     open(logPath, "a").write(",".join(configList))
 
@@ -87,9 +97,9 @@ def q(args):
     except:
         time = 100000
 
-    open(logPath, "a").write(str(time))
+    open(logPath, "a").write(","+str(time))
 
     return time
     
-best = fmin(q, space, algo=rand.suggest, max_evals=100)
+best = fmin(q, space, algo=rand.suggest, max_evals=300)
 print(best)
