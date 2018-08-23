@@ -16,13 +16,13 @@ db = pymysql.connect("localhost", "root", "123456", charset='utf8' )
 cursor = db.cursor()
 dropDB = "DROP DATABASE IF EXISTS tpcc100;"
 createDB = "CREATE DATABASE tpcc100;"
-try:
-   cursor.execute(dropDB)
-   cursor.execute(createDB)
-   db.commit()
-except:
-   db.rollback()
-db.close()
+# try:
+#    cursor.execute(dropDB)
+#    cursor.execute(createDB)
+#    db.commit()
+# except:
+#    db.rollback()
+# db.close()
 
 paramNames=[
     "sort_buffer_size",
@@ -96,13 +96,13 @@ def changeConfig(configs):
 def q(args):
     changeConfig(args)
 
-    # try:
-    #     cursor.execute(dropDB)
-    #     cursor.execute(createDB)
-    #     db.commit()
-    # except:
-    #     db.rollback()
-    #     db.close()
+    try:
+        cursor.execute(dropDB)
+        cursor.execute(createDB)
+        db.commit()
+    except:
+        db.rollback()
+        db.close()
 
     os.system(run)
     f = open(resultPath, 'r')
@@ -115,7 +115,7 @@ def q(args):
 
     return -TpmC
 
-best = fmin(q, space, algo = rand.suggest, max_evals = 10)
+best = fmin(q, space, algo = rand.suggest, max_evals = 300)
 print(best)
 
 

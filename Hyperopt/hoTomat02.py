@@ -49,25 +49,25 @@ paramNames = [
 ]
 
 if (os.path.exists(logPath) == False):
-    open(logPath, "w").write(",".join(paramNames) + "," + "time")
+    open(logPath, "w").write(",".join(paramNames) + "," + "throughput")
 # open(logPath, "a").write("\n")
 
 space = [
-    hp.choice(paramNames[0], ['128m', '256m', '64m']),
-    hp.choice(paramNames[1], ['64m', '128m', '256m']),
+    hp.choice(paramNames[0], ['64m']),
+    hp.choice(paramNames[1], ['64m']),
     # hp.choice(paramNames[2], ['128m', '256m', '512m']),
-    hp.choice(paramNames[2], ['512m']),
+    hp.choice(paramNames[2], ['128m']),
 
     hp.choice(paramNames[3], ['org.apache.coyote.http11.Http11Protocol', 'org.apache.coyote.http11.Http11NioProtocol',
                               'org.apache.coyote.http11.Http11AprProtocol']),
     hp.choice(paramNames[4], ['8192', '4096', '16384']),
-    hp.choice(paramNames[5], ['1000', '500', '2000']),
-    hp.choice(paramNames[6], ['100', '200', '50']),
+    hp.choice(paramNames[5], ['1000', '500', '200']),
+    hp.choice(paramNames[6], ['100', '25', '50']),
     hp.choice(paramNames[7], ['75', '250', '500']),
     hp.choice(paramNames[8], ['10', '50', '100']),
     hp.choice(paramNames[9], ['100', '50', '200']),
     hp.choice(paramNames[10], ['True', 'false']),
-    hp.choice(paramNames[11], ['30000', '3000', '1000']),
+    hp.choice(paramNames[11], ['30000', '20000', '10000']),
     hp.choice(paramNames[12], ['True', 'false']),
     hp.choice(paramNames[13], ['2048', '1024'])
 ]
@@ -115,14 +115,14 @@ def q(args):
     f = open('/root/TomcatResult/dashboard/content/js/dashboard.js', 'r')
 
     try:
-        time = float(f.readlines()[183].split(": [")[1].split(", ")[7])
+        throughput = float(f.readlines()[183].split(": [")[1].split(", ")[10])
     except:
-        time = 0
+        throughput = 0
 
-    open(logPath, "a").write(','+str(time))
+    open(logPath, "a").write(','+str(throughput))
 
-    return time
+    return -throughput
 
 
-best = fmin(q, space, algo=rand.suggest, max_evals=10)
+best = fmin(q, space, algo=rand.suggest, max_evals=2)
 print(best)

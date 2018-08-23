@@ -30,7 +30,7 @@ paramNames = [
 
 if(os.path.exists(logPath) == False):
     open(logPath, "w").write(",".join(paramNames) + "," + "requestPerSecond")
-# open(logPath, "a").write("\n")
+#open(logPath, "a").write("\n")
 
 space = [
     hp.uniform(paramNames[0], 1, 11),
@@ -49,19 +49,20 @@ def changeConfig(configs):
     for config in configs:
         configList.append(str(config))
     configString = ""
-    configString += (configList[0]+"mb ")
-    configString += (configList[1]+" ")
-    configString += (configList[2]+" ")
-    configString += (configList[3]+" ")
-    configString += (configList[4]+"mb ")
-    configString += (configList[5]+" ")
-    configString += (configList[6]+" ")
-    configString += (configList[7]+" ")
-    configString += (configList[8]+" \n")
+    configString += (configList[0].split(".")[0]+"mb ")
+    configString += (configList[1].split(".")[0]+" ")
+    configString += (configList[2].split(".")[0]+" ")
+    configString += (configList[3].split(".")[0]+" ")
+    configString += (configList[4].split(".")[0]+"mb ")
+    configString += (configList[5].split(".")[0]+" ")
+    configString += (configList[6].split(".")[0]+" ")
+    configString += (configList[7].split(".")[0]+" ")
+    configString += (configList[8].split(".")[0]+" \n")
 
     writeConfig(configString,workload)
+
     open(logPath, "a").write("\n")
-    open(logPath, "a").writable(",".join(configList))
+    open(logPath, "a").write(",".join(configList))
     
 def q(args):
     changeConfig(args)
@@ -77,13 +78,13 @@ def q(args):
         f = 0
         g = "CRASHED"
 
-        status = "SUCCESS"
+    status = "SUCCESS"
     if g != "requests":
         status = "CRASHED"
 
     open(logPath, "a").write(','+str(requestsPerSecond))
 
-    return requestsPerSecond
+    return -requestsPerSecond
 
-best = fmin(q, space, algo = rand.suggest, max_evals = 10)
+best = fmin(q, space, algo = rand.suggest, max_evals = 400)
 print(best)
